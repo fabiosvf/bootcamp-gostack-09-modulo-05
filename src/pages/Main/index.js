@@ -47,6 +47,11 @@ export default class Main extends Component {
 
       if (newRepo === '') throw 'Você precisar indicar um repositório';
 
+      const hasRepo = repositories.find(
+        r => r.name.toUpperCase() === newRepo.toUpperCase()
+      );
+      if (hasRepo) throw 'Repositório duplicado';
+
       const response = await api.get(`/repos/${newRepo}`);
 
       const data = {
@@ -58,6 +63,11 @@ export default class Main extends Component {
         newRepo: '',
       });
     } catch (error) {
+      if (error.message && error.message.includes('status code 404')) {
+        console.log('Repositório não existe');
+      } else {
+        console.log(error);
+      }
       this.setState({ error: true });
     } finally {
       this.setState({ loading: false });
